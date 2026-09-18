@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#080914">
+  <title>IMPOSTOR — Party Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
+
+  <div id="loading-screen" class="screen loading-screen">
+    <div class="logo-orb"><span>?</span></div>
+    <div class="eyebrow">PARTY GAME</div>
+    <h1>IMPOSTOR</h1>
+    <div class="progress-bar"><div class="progress-fill"></div></div>
+  </div>
+
+  <main id="app">
+    <section id="menu-screen" class="screen hidden">
+      <header class="topbar">
+        <div class="brand"><span class="brand-mark">?</span><span>IMPOSTOR</span></div>
+        <div class="top-actions">
+          <button id="theme-btn" class="icon-btn" title="Alternar tema" aria-label="Alternar tema">☀️</button>
+          <button id="sound-btn" class="icon-btn" title="Som" aria-label="Som">🔊</button>
+        </div>
+      </header>
+
+      <div class="hero">
+        <div class="eyebrow">UM JOGO. UMA PALAVRA. UM IMPOSTOR.</div>
+        <h2>Quem está a <span>mentir?</span></h2>
+        <p>Escolhe uma categoria, junta os teus amigos e descobre quem consegue blefar até ao fim.</p>
+        <button id="quick-start-btn" class="primary hero-btn">⚡ Jogo rápido</button>
+      </div>
+
+      <div class="menu-tabs">
+        <button class="tab active" data-tab="play">🎮 Jogar</button>
+        <button class="tab" data-tab="categories">🗂️ Categorias</button>
+        <button class="tab" data-tab="stats">📊 Estatísticas</button>
+        <button class="tab" data-tab="history">🏆 Histórico</button>
+      </div>
+
+      <div id="play-panel" class="tab-panel">
+        <div class="section-heading"><div><span class="eyebrow">ESCOLHE O TEMA</span><h3>Categorias</h3></div><span id="category-count" class="muted"></span></div>
+        <div class="grid category-grid" id="category-grid"></div>
+      </div>
+
+      <div id="categories-panel" class="tab-panel hidden">
+        <div class="section-heading"><div><span class="eyebrow">PERSONALIZA O JOGO</span><h3>As tuas categorias</h3></div></div>
+        <div class="creator-card">
+          <div class="creator-icon">✨</div>
+          <div><h3>Criar categoria</h3><p>Cria um tema privado para o teu grupo e adiciona quantas palavras quiseres.</p></div>
+        </div>
+        <div class="form-grid">
+          <label>Nome da categoria<input id="custom-category-name" type="text" maxlength="30" placeholder="Ex.: Memes do grupo"></label>
+          <label>Emoji<input id="custom-category-icon" type="text" maxlength="4" placeholder="😂"></label>
+        </div>
+        <label>Palavras <span class="muted">(uma por linha)</span><textarea id="custom-category-words" rows="8" placeholder="Palavra 1&#10;Palavra 2&#10;Palavra 3"></textarea></label>
+        <div class="form-actions"><button id="save-category-btn" class="primary">💾 Guardar categoria</button><button id="clear-category-btn" class="secondary">Limpar</button></div>
+        <div id="custom-category-list" class="custom-list"></div>
+      </div>
+
+      <div id="stats-panel" class="tab-panel hidden">
+        <div class="section-heading"><div><span class="eyebrow">DESEMPENHO</span><h3>Estatísticas dos jogadores</h3></div><button id="reset-stats-btn" class="text-btn">Repor</button></div>
+        <div id="stats-list" class="stats-list"></div>
+      </div>
+
+      <div id="history-panel" class="tab-panel hidden">
+        <div class="section-heading"><div><span class="eyebrow">PARTIDAS GUARDADAS</span><h3>Histórico de vencedores</h3></div><button id="clear-history-btn" class="text-btn">Limpar</button></div>
+        <div id="history-list" class="history-list"></div>
+      </div>
+    </section>
+
+    <section id="setup-screen" class="screen centered hidden">
+      <button class="back-link" id="setup-back-btn">← Voltar</button>
+      <div class="setup-card">
+        <div class="category-badge" id="setup-category-icon">🎯</div>
+        <span class="eyebrow">NOVA PARTIDA</span>
+        <h2 id="setup-category-label">Categoria</h2>
+        <p class="muted">Adiciona os jogadores e escolhe quantos impostores haverá.</p>
+        <div class="add-player-row"><input type="text" id="player-name-input" maxlength="20" placeholder="Nome do jogador"><button id="add-player-btn" class="primary add-btn">+</button></div>
+        <ul id="player-list"></ul>
+        <div class="settings-row">
+          <label>Nº de impostores<input type="number" id="impostor-count" min="1" value="1"></label>
+          <label>Tempo de discussão<input type="number" id="discussion-time" min="0" max="600" value="120"></label>
+        </div>
+        <label class="toggle-row"><span>🎲 Impostor sem palavra</span><input id="no-word-mode" type="checkbox"><span class="toggle"></span></label>
+        <p id="setup-error" class="error hidden"></p>
+        <button id="start-reveal-btn" class="primary full">Começar partida →</button>
+      </div>
+    </section>
+
+    <section id="reveal-screen" class="screen centered hidden">
+      <div class="phase-indicator"><span>1</span> REVELAÇÃO</div>
+      <p class="pass-instruction">Passa o telemóvel a <strong id="current-player-name"></strong></p>
+      <p class="muted small">Só essa pessoa deve ver a carta.</p>
+<div class="card-scene">
+  <div class="game-card" id="game-card">
+
+    <div class="card-face card-front" id="card-front">
+      <div class="card-question">?</div>
+      <span>TOCA NA CARTA PARA REVELAR</span>
+    </div>
+
+    <div class="card-face card-back">
+      <div id="reveal-role" class="role-text"></div>
+      <div id="reveal-word" class="word-text"></div>
+      <div id="reveal-secret" class="muted small"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="reveal-actions">
+  <button id="reveal-btn" class="primary">👁 Revelar palavra</button>
+  <button id="next-player-btn" class="primary hidden">Esconder & passar →</button>
+</div>
+      <div class="progress-dots" id="reveal-progress"></div>
+    </section>
+
+    <section id="vote-screen" class="screen centered hidden">
+      <div class="phase-indicator"><span>2</span> VOTAÇÃO</div>
+      <div class="timer-wrap"><div id="timer-display">02:00</div><button id="timer-btn" class="icon-btn">▶</button></div>
+      <h2>Quem é o Impostor?</h2><p class="muted">Discutam e escolham uma pessoa para eliminar.</p>
+      <div class="grid vote-grid" id="vote-grid"></div>
+      <button id="reveal-result-btn" class="primary hidden">⚖️ Revelar resultado</button>
+    </section>
+
+    <section id="result-screen" class="screen centered hidden">
+      <div id="result-icon" class="result-icon">🏆</div>
+      <span class="eyebrow">RESULTADO</span><h2 id="result-title"></h2><p id="result-detail"></p><p id="result-word" class="result-word"></p>
+      <div id="points-breakdown" class="points-breakdown"></div>
+      <div class="result-actions"><button id="continue-btn" class="primary hidden">Nova votação</button><button id="play-again-btn" class="primary hidden">🔄 Jogar novamente</button><button id="home-btn" class="secondary">⌂ Menu principal</button></div>
+    </section>
+  </main>
+  <div id="toast" class="toast hidden"></div>
+  <script src="categories.js"></script><script src="script.js"></script>
+</body>
+</html>
